@@ -1,6 +1,8 @@
 # define the class tank
 import pygame
 import random
+import math
+import time
 
 class Tank(pygame.sprite.Sprite):
     def __init__(self,screen):
@@ -25,7 +27,7 @@ class Tank(pygame.sprite.Sprite):
 
     def reset(self):
         """ define new speed after tank hit"""
-        self.vx = self.vx_range[random.randrange(12)]
+        self.vx = self.vx_range[random.randrange(11)]
 
 class ScoreBoard(pygame.sprite.Sprite):
     def __init__(self):
@@ -42,14 +44,19 @@ class ScoreBoard(pygame.sprite.Sprite):
 
 
 class Explosion(pygame.sprite.Sprite):
-    def __init__(self,background,SrcPoint):
+    def __init__(self,Srcpoint):
         pygame.sprite.Sprite.__init__(self)
         self.traj = []
         self.traj_len = []
         self.alpha = 0.1
-        self.SrcPoint = SrcPoint
-        self.background = background
-        self.largeur, self.hauteur = self.background.get_size()
+        self.SrcPoint = (200,100)
+        self.image = pygame.Surface((400, 100))
+        self.image.convert()
+        self.image.fill((0, 0, 0))
+        self.rect = self.image.get_rect()
+        self.rect.bottomleft = (Srcpoint[0]-200, 235)
+
+        self.largeur, self.hauteur = self.image.get_size()
 
         self.pos = 0
 
@@ -82,11 +89,7 @@ class Explosion(pygame.sprite.Sprite):
                 self.v_y = self.v_y + self.a_y
                 Y = Y - self.v_y
                 pos = [int(X), int(Y)]
-                if t:
-                    if int(Y) < 2 * self.hauteur:
-                        self.traj_i.append(pos)
-                else:
-                    self.traj_i.append(pos)
+                self.traj_i.append(pos)
 
             t += 1
 
@@ -96,11 +99,15 @@ class Explosion(pygame.sprite.Sprite):
             self.traj_i = []
 
     def draw_pos(self):
-        time.sleep(0.015) # slow down the animation
+        time.sleep(0.015)  # slow down the animation
         for i in range(len(self.traj)):
             if self.pos < len(self.traj[i]):
                 if self.pos < len(self.traj[0]):
-                    colorpoint = random.randrange(0,255),random.randrange(0,255),random.randrange(0,255)
-                    pygame.draw.circle(self.background, colorpoint, self.traj[i][self.pos], 1)
-                    #print(self.traj[i][self.pos])
+                    colorpoint = random.randrange(0, 255), random.randrange(0, 255), random.randrange(0, 255)
+                    pygame.draw.circle(self.image, colorpoint, self.traj[i][self.pos], 1)
 
+
+    def update(self):
+        self.rect.bottomleft= self.SrcPoint
+        self.image.fill((0, 0, 0))
+        self.draw_pos()
