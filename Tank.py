@@ -34,10 +34,13 @@ tank = Stank.Tank(screen)
 plane = Splane.Plane(screen)
 bomb = Splane.Bomb(plane.rect.center,screen)
 score = Stank.ScoreBoard()
+explosion = Stank.Explosion(tank.rect.center)
 
-allSprites = pygame.sprite.Group(tank,plane)
+TankSprite = pygame.sprite.Group(tank)
+PlaneSprite = pygame.sprite.Group(plane)
 BombSprite = pygame.sprite.Group(bomb)
 ScoreSprite = pygame.sprite.Group(score)
+ExplosionSprite = pygame.sprite.Group(explosion)
 
 while run:
     # set frame number per second
@@ -62,6 +65,7 @@ while run:
         bomb.release = False
         score.TanksHits += 1
         tank.hitted = True # show explosion in update method instead of tank
+        explosion.SrcPoint = (tank.x-200,235)
         tank.reset()
 
 
@@ -80,20 +84,47 @@ while run:
     pygame.draw.line(screen, green, [0, 240], [width, 240], 5)
     screen.blit(Label,(50,330))
 
+    if tank.hitted:
 
-    allSprites.clear(screen,background)
-    BombSprite.clear(screen,background)
-    ScoreSprite.clear(screen,background)
+        for pos in range(100):
+            TankSprite.clear(screen, background)
+            PlaneSprite.clear(screen, background)
+            BombSprite.clear(screen, background)
+            ScoreSprite.clear(screen, background)
+            ExplosionSprite.clear(screen, background)
 
-    allSprites.update()
-    BombSprite.update(plane.rect.center)
-    ScoreSprite.update()
+            explosion.pos = pos
+            ExplosionSprite.update()
+            PlaneSprite.update()
+            BombSprite.update(plane.rect.center)
+            ScoreSprite.update()
 
-    allSprites.draw(screen)
-    BombSprite.draw(screen)
-    ScoreSprite.draw(screen)
+            ExplosionSprite.draw(screen)
+            PlaneSprite.draw(screen)
+            BombSprite.draw(screen)
+            ScoreSprite.draw(screen)
 
-    pygame.display.flip()
+            pygame.display.flip()
+        tank.hitted = False
+
+    else:
+        TankSprite.clear(screen,background)
+        PlaneSprite.clear(screen,background)
+        BombSprite.clear(screen,background)
+        ScoreSprite.clear(screen,background)
+        ExplosionSprite.clear(screen,background)
+
+        TankSprite.update()
+        PlaneSprite.update()
+        BombSprite.update(plane.rect.center)
+        ScoreSprite.update()
+
+        TankSprite.draw(screen)
+        PlaneSprite.draw(screen)
+        BombSprite.draw(screen)
+        ScoreSprite.draw(screen)
+
+        pygame.display.flip()
 
     counter += 1
 
