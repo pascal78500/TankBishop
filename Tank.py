@@ -14,6 +14,7 @@ white = 255,255,255
 green = 0,200,0
 counter = 0
 GameOver = False
+GroundY = 240 # level where the ground is drawn
 
 # create the main window
 size = width, height = 600, 400
@@ -65,11 +66,11 @@ while run:
         bomb.release = False
         score.TanksHits += 1
         tank.hitted = True # show explosion in update method instead of tank
-        explosion.SrcPoint = (tank.x-200,235)
+        explosion.SrcPoint = (tank.x-200,235) # replace value by variable !!!
         tank.reset()
 
 
-    if counter >= 60:
+    if counter >= 60: # implement a pseudo timer around 1 sec.
         counter = 0
         score.TimeLeft -= 1
 
@@ -79,9 +80,9 @@ while run:
         counter = 0
         OverLabel = myfont.render("Game Over",1,white)
         screen.blit(OverLabel,(250,100))
-    # screen.blit(background,(0,0))
-    pygame.draw.rect(screen,white,(0,240,width,30))
-    pygame.draw.line(screen, green, [0, 240], [width, 240], 5)
+
+    pygame.draw.rect(screen,white,(0,GroundY,width,30))
+    pygame.draw.line(screen, green, [0, GroundY], [width, GroundY], 5) # the thin green line on top of white rectangle
     screen.blit(Label,(50,330))
 
     if tank.hitted:

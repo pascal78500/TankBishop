@@ -5,6 +5,7 @@ import math
 import time
 
 class Tank(pygame.sprite.Sprite):
+    """ define the Tank class to manage the sprite"""
     def __init__(self,screen):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load("tank.png")
@@ -18,6 +19,7 @@ class Tank(pygame.sprite.Sprite):
         self.hitted = False
 
     def update(self):
+        """update method to update the drawing of the tank"""
         self.x +=self.vx
         if self.x > self.screen.get_width()+27 and self.vx > 0:
             self.x = -7
@@ -30,12 +32,15 @@ class Tank(pygame.sprite.Sprite):
         self.vx = self.vx_range[random.randrange(11)]
 
 class ScoreBoard(pygame.sprite.Sprite):
+    """Class to manage information dashboard"""
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.TanksHits = 0
         self.TimeLeft = 60
         self.myFont = pygame.font.SysFont("Comic Sans MS", 30)
+
     def update(self):
+        """Updte the scoring information on the board"""
         white = (255,255,255)
         self.Text = "Tanks Hits :%d     Time Left :%d" % (self.TanksHits,self.TimeLeft)
         self.image = self.myFont.render(self.Text, 1, white)
