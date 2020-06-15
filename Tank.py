@@ -7,22 +7,63 @@ import random
 # init pygame
 pygame.init()
 
-print("hello in Tank Game")
 #constant
-black = 0, 0, 0
-white = 255,255,255
-green = 0,200,0
-counter = 0
-GameOver = False
-GroundY = 240 # level where the ground is drawn
-GroundX = 100 # initial position of tank on the ground
+black = (0, 0, 0)
+white = (255,255,255)
+green = (0,200,0)
+run = True
 
 # create the main window
 size = width, height = 600, 400
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Bishop' Tank")
 
+def intro():
+    startGame = False
+    tank = Stank.Tank(screen, 100, 300)
+    background = pygame.Surface(screen.get_size())
+    background = background.convert()
+    background.fill(black)
+    screen.blit(background, (0, 0))
+    #plane = Splane.Plane(screen)
+    allSprites = pygame.sprite.Group(tank)
+    instructions = ("Tank is a free adaptation of the original game developed by",
+                    "BoB Bishop in 1977 on Apple ][. You are a jet pilot and you", "have to bombard tanks during a limited time.",
+                    "Press Space bar to launch bomb, 'q or a' to quit the game.", "'r' to reset the game when the game is over. Good luck !!",
+                    )
+    insFont = pygame.font.SysFont("Comic Sans MS",20)
+    insLabels = []
+    for line in instructions:
+        tempLabel = insFont.render(line,1,green)
+        insLabels.append(tempLabel)
+    clock = pygame.time.Clock()
+    keepGoing = True
+    while keepGoing:
+        clock.tick(60)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                keepGoing = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q or event.key == pygame.K_a:
+                    keepGoing = False
+                if event.key == pygame.K_SPACE:
+                    keepGoing = False
+                    startGame = True
+
+        allSprites.clear(screen,background)
+        allSprites.update()
+        allSprites.draw(screen)
+
+        for i in range(len(insLabels)):
+            screen.blit(insLabels[i],(20,30*i+10))
+        insFont = pygame.font.SysFont("Comic Sans MS", 30)
+        lauch = insFont.render("Press Space Bar to start the Game",1,white)
+        screen.blit(lauch,(50,200))
+        pygame.display.flip()
+    return startGame
+
 def draw_screen(tankHitted):
+    """ draw all sprites depending on the state of the tank"""
     TankSprite.clear(screen, background)
     PlaneSprite.clear(screen, background)
     BombSprite.clear(screen, background)
@@ -50,15 +91,28 @@ def draw_screen(tankHitted):
     pygame.display.flip()
 
 
+# constant
+counter = 0
+GameOver = False
+GroundY = 240  # level where the ground is drawn
+GroundX = 100  # initial position of tank on the ground
+
+# display instro
+if intro():
+    run = True
+else:
+    run = False
+
 #create the background
 background = pygame.Surface(screen.get_size())
 background = background.convert()
 background.fill(black)
+screen.blit(background,(0,0))
 myfont = pygame.font.SysFont("Comic Sans MS",30)
 Label = myfont.render("Hit Space Bar to release the bomb",1,white)
 
 # pygame main event loop
-run = True
+
 clock = pygame.time.Clock()
 tank = Stank.Tank(screen,GroundX,GroundY)
 plane = Splane.Plane(screen)
@@ -87,7 +141,7 @@ while run:
                 score.TanksHits = 0
                 score.TimeLeft = 60
                 screen.blit(background, (0, 0))
-            if event.key == pygame.K_q: # exit the game with q pressed on qwerty, a on azerty
+            if event.key == pygame.K_q or event.key == pygame.K_a: # exit the game with q pressed on qwerty, a on azerty
                 run = False
 
     # test collision between bomb and tank
@@ -134,6 +188,15 @@ while run:
         draw_screen(tank.hitted)
 
     counter += 1
+
+
+# def main():
+#     """ state function to handle intro state and game state"""
+#     while run:
+#         game()
+#
+# if __name__ == '__main__':
+#     main()
 
 ##########################
 pygame.quit()
