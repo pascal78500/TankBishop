@@ -17,7 +17,7 @@ class Tank(pygame.sprite.Sprite):
         self.x = GroundLevelX
         self.y = GroundLevelY
         self.rect.bottomleft = (self.x,self.y)
-        self.vx_range = (1, 0, 0.5, 2, -0.5,-3,-1,0.7,-0.7,0.2,-0.2)
+        self.vx_range = (1, 0.1, 0.5, 2, -0.5,-4,-1,0.7,-0.7,0.2,-0.2)
         self.vx = self.vx_range[0]
         self.hitted = False
         self.music = pygame.mixer.Sound("Tank_run.wav")
@@ -27,8 +27,8 @@ class Tank(pygame.sprite.Sprite):
         #self.music.play()
         self.x +=self.vx
         if self.x > self.screen.get_width()+27 and self.vx > 0:
-            self.x = -7
-        elif self.x < 0 and self.vx < 0:
+            self.x = -27
+        elif self.x < -27 and self.vx < 0:
             self.x = self.screen.get_width() + 27
         self.rect.bottomleft = (self.x, self.y)
 
