@@ -4,28 +4,33 @@ import random
 import math
 import time
 
+pygame.mixer.init()
+
 class Tank(pygame.sprite.Sprite):
     """ define the Tank class to manage the sprite"""
-    def __init__(self,screen):
+    def __init__(self,screen, GroundLevelX, GroundLevelY):
         pygame.sprite.Sprite.__init__(self)
+        # image 55x21
         self.image = pygame.image.load("tank.png")
         self.screen = screen
         self.rect = self.image.get_rect()
-        self.x = 100
-        self.y = 227
-        self.rect.center = (self.x,self.y)
+        self.x = GroundLevelX
+        self.y = GroundLevelY
+        self.rect.bottomleft = (self.x,self.y)
         self.vx_range = (1, 0, 0.5, 2, -0.5,-3,-1,0.7,-0.7,0.2,-0.2)
         self.vx = self.vx_range[0]
         self.hitted = False
-
+        self.music = pygame.mixer.Sound("Tank_run.wav")
+        self.music.set_volume(0.5)
     def update(self):
         """update method to update the drawing of the tank"""
+        #self.music.play()
         self.x +=self.vx
         if self.x > self.screen.get_width()+27 and self.vx > 0:
             self.x = -7
         elif self.x < 0 and self.vx < 0:
             self.x = self.screen.get_width() + 27
-        self.rect.center = (self.x, self.y)
+        self.rect.bottomleft = (self.x, self.y)
 
     def reset(self):
         """ define new speed after tank hit"""
@@ -49,18 +54,19 @@ class ScoreBoard(pygame.sprite.Sprite):
 
 
 class Explosion(pygame.sprite.Sprite):
+    """ Manage explosion particules when the target is hitted"""
     def __init__(self,Srcpoint):
         pygame.sprite.Sprite.__init__(self)
         self.traj = []
         self.traj_len = []
         self.alpha = 0.1
         self.SrcPoint = (200,100)
-        self.image = pygame.Surface((400, 100))
+        self.image = pygame.Surface((400, 100)) # define a rectangle to draw the explosion
         self.image.convert()
         self.image.fill((0, 0, 0))
         self.rect = self.image.get_rect()
-        self.rect.bottomleft = (Srcpoint[0]-200, 235)
-
+        self.rect.bottomleft = (Srcpoint[0]-int(self.rect.width/2), 235)
+        self.music = pygame.mixer.Sound("explosion.wav")
         self.largeur, self.hauteur = self.image.get_size()
 
         self.pos = 0

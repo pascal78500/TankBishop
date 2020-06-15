@@ -1,15 +1,18 @@
 # plane class
 import pygame
 
+pygame.mixer.init()
+
 class Plane(pygame.sprite.Sprite):
     def __init__(self,screen):
         pygame.sprite.Sprite.__init__(self)
         self.screen = screen
+        # image 49x19
         self.image = pygame.image.load("plane.png")
         self.rect = self.image.get_rect()
 
         self.x = self.screen.get_width()
-        self.y = 10
+        self.y = 10 # initial position in the sky
         self.vx = -2
 
     def update(self):
@@ -34,23 +37,27 @@ class Bomb(pygame.sprite.Sprite):
         self.rect.center = (self.x,self.y)
         self.release = False
         self.friction = 0
-
-    def update(self,posPlane):
-
+        self.music = pygame.mixer.Sound("Bomb_lift.wav")
+        self.music.set_volume(0.5)
+        
+    def update(self,objPlane):
+        Vx = objPlane.vx # horizontal speed of plane
         if self.release and self.y < 240:
             self.y +=2
-            self.x = posPlane[0] + self.friction
-            self.friction += .2
-            #print(self.friction)
+            self.x = self.x + Vx + self.friction
+            if self.x < 0:
+                self.x = self.screen.get_width()
+            self.friction += self.y * 9.81/100000
+
         else:
-            #print("plane :" + str(posPlane))
-            self.y = posPlane[1] + 10
-            self.x = posPlane[0]
+            #Bomb under the plane
+            self.y = objPlane.rect.center[1] + 10
+            self.x = objPlane.rect.center[0]
             self.friction = 0
             self.release = False
+            if self.x < -25:
+                self.reset()
 
-        if self.x < -25:
-            self.reset()
         self.rect.center = (self.x, self.y)
 
     def reset(self):

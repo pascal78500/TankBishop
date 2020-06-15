@@ -15,11 +15,40 @@ green = 0,200,0
 counter = 0
 GameOver = False
 GroundY = 240 # level where the ground is drawn
+GroundX = 100 # initial position of tank on the ground
 
 # create the main window
 size = width, height = 600, 400
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Bishop' Tank")
+
+def draw_screen(tankHitted):
+    TankSprite.clear(screen, background)
+    PlaneSprite.clear(screen, background)
+    BombSprite.clear(screen, background)
+    ScoreSprite.clear(screen, background)
+    ExplosionSprite.clear(screen, background)
+
+    if tankHitted:
+        explosion.pos = pos
+        ExplosionSprite.update()
+    else:
+        TankSprite.update()
+
+    PlaneSprite.update()
+    BombSprite.update(plane)
+    ScoreSprite.update()
+
+    if tankHitted:
+        ExplosionSprite.draw(screen)
+    else:
+        TankSprite.draw(screen)
+    PlaneSprite.draw(screen)
+    BombSprite.draw(screen)
+    ScoreSprite.draw(screen)
+
+    pygame.display.flip()
+
 
 #create the background
 background = pygame.Surface(screen.get_size())
@@ -31,7 +60,7 @@ Label = myfont.render("Hit Space Bar to release the bomb",1,white)
 # pygame main event loop
 run = True
 clock = pygame.time.Clock()
-tank = Stank.Tank(screen)
+tank = Stank.Tank(screen,GroundX,GroundY)
 plane = Splane.Plane(screen)
 bomb = Splane.Bomb(plane.rect.center,screen)
 score = Stank.ScoreBoard()
@@ -66,7 +95,7 @@ while run:
         bomb.release = False
         score.TanksHits += 1
         tank.hitted = True # show explosion in update method instead of tank
-        explosion.SrcPoint = (tank.x-200,235) # replace value by variable !!!
+        explosion.SrcPoint = (tank.x-int(explosion.rect.width/2),235) # replace value by variable !!!
         tank.reset()
 
 
@@ -82,50 +111,27 @@ while run:
         screen.blit(OverLabel,(250,100))
 
     pygame.draw.rect(screen,white,(0,GroundY,width,30))
-    pygame.draw.line(screen, green, [0, GroundY], [width, GroundY], 5) # the thin green line on top of white rectangle
+    pygame.draw.line(screen, green, [0, GroundY+2], [width, GroundY+2], 5) # the thin green line on top of white rectangle
     screen.blit(Label,(50,330))
 
-    if tank.hitted:
-
-        for pos in range(100):
-            TankSprite.clear(screen, background)
-            PlaneSprite.clear(screen, background)
-            BombSprite.clear(screen, background)
-            ScoreSprite.clear(screen, background)
-            ExplosionSprite.clear(screen, background)
-
-            explosion.pos = pos
-            ExplosionSprite.update()
-            PlaneSprite.update()
-            BombSprite.update(plane.rect.center)
-            ScoreSprite.update()
-
-            ExplosionSprite.draw(screen)
-            PlaneSprite.draw(screen)
-            BombSprite.draw(screen)
-            ScoreSprite.draw(screen)
-
-            pygame.display.flip()
-        tank.hitted = False
-
+    if bomb.release:
+        tank.music.stop()
+        bomb.music.play()
     else:
-        TankSprite.clear(screen,background)
-        PlaneSprite.clear(screen,background)
-        BombSprite.clear(screen,background)
-        ScoreSprite.clear(screen,background)
-        ExplosionSprite.clear(screen,background)
+        bomb.music.stop()
+        tank.music.play()
 
-        TankSprite.update()
-        PlaneSprite.update()
-        BombSprite.update(plane.rect.center)
-        ScoreSprite.update()
+    if tank.hitted:
+        tank.music.stop()
+        explosion.music.play()
+        for pos in range(100):
+            draw_screen(tank.hitted)
 
-        TankSprite.draw(screen)
-        PlaneSprite.draw(screen)
-        BombSprite.draw(screen)
-        ScoreSprite.draw(screen)
+        tank.hitted = False
+    else:
+        tank.music.play()
 
-        pygame.display.flip()
+        draw_screen(tank.hitted)
 
     counter += 1
 
