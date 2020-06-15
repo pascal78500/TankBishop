@@ -39,7 +39,7 @@ class Bomb(pygame.sprite.Sprite):
         self.friction = 0
         self.music = pygame.mixer.Sound("Bomb_lift.wav")
         self.music.set_volume(0.5)
-        
+
     def update(self,objPlane):
         Vx = objPlane.vx # horizontal speed of plane
         if self.release and self.y < 240:
